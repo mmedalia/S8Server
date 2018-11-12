@@ -1,0 +1,206 @@
+<% include partials/header %>
+
+<div id="impress" class="impress-not-supported">
+			
+	<div id="intro" class="step" data-x="0" data-y="0">
+        <h2>
+        	SPLITTING EIGHTS
+        	<br />
+        	3D INTERACTIVE SHOWCASE</h2>
+        <p>
+        	3D Interactive Storytelling<br /> 
+        	Multi-platform Deployment<br /> 
+        	Asset Creation Pipeline<br /> 
+        	Dynamic Brand Matching<br />
+        	<br />
+        	<br />
+        	<a id="demoReel" href="#" >GE Pitch Reel</a>
+        </p>
+        <img src="showcaseAssets/img/s8_logo_hero.png" width="232" height="458" alt="Splitting Eights 3D Interactive Capabilities" />
+    </div>
+
+
+    <div id="gmc" class="step" data-x="1000" data-y="-1200" data-scale="1.3" data-rotate="90">
+        <h2>GMC Sierra WebGL Customizer</h2>
+        <p>3D in any browser!  Trying to reach the masses with rich interactive media, WebGL can produce stunning experiences that can be viewed by anyone...anywhere...on any device.
+        	<br />
+        	<br />
+        	<a href="http://keeper.tv/productviewer/#product=gmc" >Live WebGL Demo</a>
+        </p>
+        <img src="showcaseAssets/img/gmcSample.jpg" width="550" height="291" alt="GMC Sierra Denali" />
+    </div>
+
+    
+    <div id="dish" class="step" data-x="1100" data-y="1200" data-scale="1.8" data-rotate="190">
+        <h2>GE Dishwasher</h2>
+        <p>Here we are delivering a GE Profile Dishwash through an augmented reality experience as well as a live web based experience demonstrating the portability and interactivity of using WebGL for product marketing.
+        	<br />
+        	<br />
+        	<a id="ARDish" href="#" >AR Dishwasher Capture</a><br />
+        	<a href="http://keeper.tv/productviewer/#product=profileDish" >Live WebGL Demo</a>
+        </p>
+        <img src="showcaseAssets/img/ProfileDishAsset.jpg" width="289" height="535" alt="Profile Refrigerator" />
+    </div>
+    
+    <div id="showroom" class="step" data-x="-300" data-y="600" data-scale="0.2" data-rotate="270">
+        <h2>AR Enhanced Showroom</h2>
+        <p>
+        	Bringing a showroom's connected appliances to life using augmented reality technology combined with stunning motion graphics
+        	<br />
+        	<br />
+        	<a id="ARShowroom" href="#" >AR Showroom</a><br />
+        </p>
+        <img src="showcaseAssets/img/EnhancedShowroom.jpg" width="558" height="329" alt="Enhanced Showroom Experience" />
+    </div>
+    
+    <div id="upload" class="step" data-x="-200" data-y="1500" data-rotate="180">
+        <h2>GE Refrigerator</h2>
+        <p>
+        	3D in any browser!  Trying to reach the masses with rich interactive media, WebGL can produce stunning experiences that can be viewed by anyone...anywhere...on any device.
+        	<br />
+        	<br />
+        	<a id="ProfileRefer" href="http://keeper.tv/productviewer/#product=profileRefer" >Live WebGL Demo</a><br />
+        </p>
+        <img src="showcaseAssets/img/ProfileReferAsset.jpg" width="248" height="510" alt="Profile Refrigerator" />
+    </div>
+    
+    <div id="immersive" class="step" data-x="-1200" data-y="1000" data-scale="0.8" data-rotate="270">
+        <h2>Immersive Virtual Reality</h2>
+        <p>
+        	Immerse yourself and your customers into the 3D stories created using the Splitting Eights platform.  Trade shows, showroom displays, etc, anywhere you want to draw people in to experience your products.
+        	<br />
+        	<br />
+        	<a id="immersed" href="#" >Video Capture</a><br />
+        </p>
+        <img src="showcaseAssets/img/ImmersiveAppsAsset.jpg" width="570" height="389" alt="Immersive Virtual Reality" />
+    </div>
+    
+</div>
+
+<a id="arrowLeft" class="arrow">&lt;</a>
+<a id="arrowRight" class="arrow">&gt;</a>
+
+<div class="closePopBtn"><img src="showcaseAssets/img/greyCloseIcon.png"></div>
+
+<div class='wrap'>
+	<div class='content'>
+		<video controls muted id="popVidPlayer" width="100%" height="100%">
+		    <source src="" type="video/mp4"><br/>
+		    Your browser does not support the video tag.
+		</video>
+	</div>
+</div>
+
+<footer>
+    <h2><i>Splitting Eights:</i> 3D Interactive Showcase</h2>
+    <a class="tzine" href="http://splittingeights.com">Splitting Eights</a>
+</footer>
+
+<!-- JavaScript includes -->
+<script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="showcaseAssets/js/impress.js"></script>
+<script src="showcaseAssets/js/script.js"></script>
+
+<script type="text/javascript">
+	var onplayingPop = false;
+	var onpausePop = false;
+	var popVideo = $('#popVidPlayer')[0];
+
+	$(document).ready(function(){
+		$(".closePopBtn").hide();
+	});
+
+	$(".closePopBtn").click(function() {
+		$(".closePopBtn").hide();
+		$("#arrowLeft").show();
+		$("#arrowRight").show();
+		closePopVideoPlayer();
+	});
+
+	$('#ARDish').click(function(e) {
+		preloadPopVideoPlayer("showcaseAssets/video/ARDishwasher.mp4");
+		delayPlay();
+	});
+
+	$('#demoReel').click(function(e) {
+		preloadPopVideoPlayer("showcaseAssets/video/GEA_Interactive_Reel.mp4");
+		delayPlay();
+	});
+	
+	$('#ARShowroom').click(function(e) {
+		preloadPopVideoPlayer("showcaseAssets/video/FergusonLou.mp4");
+		delayPlay();
+	});
+	
+	$('#immersed').click(function(e) {
+		preloadPopVideoPlayer("showcaseAssets/video/GuidedKitchenSample.mp4");
+		delayPlay();
+	});
+
+	function delayPlay(){
+		$("#arrowLeft").hide();
+		$("#arrowRight").hide();
+		$(".closePopBtn").show();
+		$('.wrap, a').addClass('active');
+
+		setTimeout(function(){
+			playPopVid();
+		}, 1500);
+	}
+
+	// On video playing toggle values
+	popVideo.onplaying = function() {
+	    onplayingPop = true;
+	    onpausePop = false;
+	};
+
+	// On video pause toggle values
+	popVideo.onpause = function() {
+	    onplayingPop = false;
+	    onpausePop = true;
+	};
+
+	// On video pause toggle values
+	popVideo.onended = function() {
+	    onplayingPop = false;
+	    onpausePop = false;
+	};
+
+	function preloadPopVideoPlayer(videoFile){
+	    pausePopVid();
+	    $('#popVidPlayer source').attr('src', videoFile);
+	    $('#popVidPlayer')[0].load();
+	    console.log("Loaded vid : " + videoFile);
+	}
+
+	// Play video function
+	function playPopVid() {      
+	    if (popVideo.paused && !onplayingPop) {
+	    	console.log('Playing Pop Video...');
+	        $('#popVidPlayer')[0].play();
+	    }
+	}
+
+	function isPopVideoPlaying(){
+	    if (popVideo.paused && !onplayingPop) {
+	        return false;
+	    }else{
+	        return true;
+	    }
+	}
+
+	// Pause video function
+	function pausePopVid() {     
+	    if (!popVideo.paused && !onpausePop) {
+	        $('#popVidPlayer')[0].pause();
+	    }
+	}
+
+	function closePopVideoPlayer(){
+	    console.log("Closing pop video player");
+	    $('#popVidPlayer')[0].pause();
+	    $('.wrap, a').removeClass('active');
+	}
+</script>
+
+<% include partials/footer %>

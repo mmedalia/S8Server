@@ -1,0 +1,421 @@
+/*-------------------------
+	Simple reset
+--------------------------*/
+
+
+*{
+	margin:0;
+	padding:0;
+}
+
+
+/*-------------------------
+	General Styles
+--------------------------*/
+
+
+html{
+	background:url('../img/bg.jpg') #fff;
+}
+
+body{
+	min-height: 600px;
+    padding: 100px 0 50px;
+	font:14px/1.3 'Segoe UI',Arial, sans-serif;
+	box-shadow:0 0 25px rgba(0,0,0,0.3) inset;
+	height:100%;
+}
+
+a, a:visited {
+	text-decoration:none;
+	outline:none;
+	color:#54a6de;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+section, footer{
+	display: block;
+}
+
+
+/*----------------------------
+	Styling the presentation
+-----------------------------*/
+
+
+#impress:not(.impress-not-supported) .step{
+	opacity:0.4;
+}
+
+#impress .step{
+	width:700px;
+	height: 600px;
+	position:relative;
+	margin:0 auto;
+	
+	-moz-transition:1s opacity;
+	-webkit-transition:1s opacity;
+	transition:1s opacity;
+}
+
+#impress .step.active{
+	opacity:1;
+}
+
+#impress h2{
+	font: normal 44px/1.5 'PT Sans Narrow', sans-serif;
+	color:#444648;
+	position:absolute;
+	z-index:10;
+}
+
+#impress p{
+	font: normal 18px/1.3 'Open Sans', sans-serif;
+	color:#27333f;
+	position:absolute;
+	z-index:10;
+}
+
+#impress img{
+	position:absolute;
+	z-index:1;
+}
+
+.arrow{
+	width:32px;
+	height:54px;
+	background:url('../img/arrows.png') no-repeat;
+	position:fixed;
+	top:50%;
+	margin-top:-27px;
+	cursor:pointer;
+	text-indent:-9999px;
+	overflow:hidden;
+	opacity:0.8;
+	border:none !important;
+	text-decoration:none !important;
+	
+	-moz-transition:0.2s opacity;
+	-webkit-transition:0.2s opacity;
+	transition:0.2s opacity;
+}
+
+.arrow:hover{
+	opacity:1;
+}
+
+#arrowLeft{
+	left:45px;
+}
+
+#arrowRight{
+	right:45px;
+	background-position:top right;
+}
+
+/* Hide the arrows if impress is not supported */
+
+#impress.impress-not-supported + .arrow,
+#impress.impress-not-supported + .arrow + .arrow{
+	display:none;
+}
+
+
+/*----------------------------
+	Slide 1 - Intro
+-----------------------------*/
+
+
+#impress #intro{
+	width: 500px;
+}
+
+#intro h2{
+	text-align: center;
+    width: 100%;
+}
+
+#intro p{
+	font-size: 22px;
+    left: 290px;
+    line-height: 1.6;
+    top: 220px;
+    white-space: nowrap;
+}
+
+#intro img{
+	top: 120px;
+}
+
+
+/*----------------------------
+	Slide 2 - GMC
+-----------------------------*/
+
+
+#impress #gmc{
+	width: 560px;
+}
+
+#gmc h2{
+	left: 0;
+	top: 370px;
+	width: 100%;
+	text-align:center;
+}
+
+#gmc p{
+	left:50%;
+	margin-left:-245px;
+    text-align: left;
+    top: 460px;
+    width: 500px;
+}
+
+#gmc img{
+	right: 0;
+    top: 50px;
+}
+
+/*----------------------------
+	Slide 3 - Simplicity
+-----------------------------*/
+
+
+#impress #dish{
+	width: 675px;
+}
+
+#dish h2{
+	left: 0;
+	top: 135px;
+	width: 400px;
+}
+
+#dish p{
+	left: 0px;
+    text-align: justify;
+    text-indent: 16px;
+    top: 225px;
+    width: 365px;
+}
+
+#dish img{
+	right: 0;
+    top: 30px;
+}
+
+
+/*----------------------------
+	Slide 4 - Connect
+-----------------------------*/
+
+
+#impress #showroom{
+	width: 560px;
+}
+
+#showroom h2{
+	left: 0;
+	top: 370px;
+	width: 100%;
+	text-align:center;
+}
+
+#showroom p{
+	left:50%;
+	margin-left:-245px;
+    text-align: left;
+    top: 460px;
+    width: 490px;
+}
+
+#showroom img{
+	right: 0;
+    top: 50px;
+}
+
+
+/*----------------------------
+	Slide 4 - Upload
+-----------------------------*/
+
+
+#impress #upload{
+	width: 620px;
+}
+
+#upload h2{
+	left: 0;
+    text-align: left;
+    top: 170px;
+}
+
+#upload p{
+	left: 32px;
+    top: 255px;
+    width: 280px;
+}
+
+#upload img{
+	right: 0;
+    top: 30px;
+}
+
+
+/*----------------------------
+	Slide 5 - Music
+-----------------------------*/
+
+
+#impress #immersive{
+	width: 690px;
+}
+
+#immersive h2{
+	left: 0;
+    text-align: center;
+    top: 10px;
+    width: 100%;
+}
+
+#immersive p{
+	font-size: 15px;
+    left: 45px;
+    text-indent: 15px;
+    top: 119px;
+}
+
+#immersive img{
+	right: 0;
+    top: 200px;
+}
+
+
+
+/*----------------------------
+	The Footer
+-----------------------------*/
+
+
+footer{
+	background-color: #111111;
+	bottom: 0;
+	box-shadow: 0 -1px 2px #111111;
+	height: 45px;
+	left: 0;
+	position: fixed;
+	width: 100%;
+	z-index: 11;
+}
+
+footer h2{
+	color: #EEEEEE;
+	font-size: 14px;
+	font-weight: normal;
+	left: 50%;
+	margin-left: -400px;
+	padding: 13px 0 0;
+	position: absolute;
+	width: 540px;
+}
+
+footer h2 i{
+	font-style:normal;
+	color:#888;
+}
+
+footer a.tzine,a.tzine:visited{
+	color: #999999;
+	font-size: 12px;
+	left: 50%;
+	margin: 16px 0 0 110px;
+	position: absolute;
+	text-decoration: none;
+	top: 0;
+}
+
+footer a i{
+	color:#ccc;
+	font-style: normal;
+}
+
+footer a i b{
+	color:#c92020;
+	font-weight: normal;
+}
+
+.closePopBtn{
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	width: 50px;
+	height: 50px;
+	cursor: pointer;
+}
+
+/* ANIMATED POP WINDOW */
+.wrap {
+	position: absolute;
+	overflow: hidden;
+	top: 10%;
+	right: 10%;
+	bottom: 85px;
+	left: 10%;
+	padding: 20px 50px;
+	display: block;
+	border-radius: 4px;
+	transform: translateY(20px);
+	transition: all 0.5s;
+	visibility: hidden;
+	pointer-events: none;
+	z-index: 100;
+}
+.wrap .content {
+	opacity: 0;
+}
+.wrap:before {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	background: white;
+	content: "";
+	bottom: 10px;
+	left: 50%;
+	top: 95%;
+	color: #fff;
+	border-radius: 50%;
+	-webkit-transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.wrap.active {
+	display: inline-block;
+	visibility: visible;
+	box-shadow: 2px 3px 16px silver;
+	transition: all 600ms;
+	transform: translateY(0px);
+	transition: all 0.5s;
+	pointer-events: all;
+}
+.wrap.active:before {
+	height: 2000px;
+	width: 2000px;
+	border-radius: 50%;
+	top: 50%;
+	left: 50%;
+	margin-left: -1000px;
+	margin-top: -1000px;
+	display: block;
+	-webkit-transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.wrap.active .content {
+	position: relative;
+	z-index: 1;
+	opacity: 1;
+	transition: all 600ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
+	height:100%;
+}

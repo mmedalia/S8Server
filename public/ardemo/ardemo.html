@@ -1,0 +1,692 @@
+<html>
+
+<head>
+	<title>Simple AR Example</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+	<style>
+		body, html {
+			font-family: 'Montserrat', sans-serif;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+			position: fixed;
+			width: 100%;
+			height: 100vh;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+		#target {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+		}
+		.common-message {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 20px;
+		}
+
+		#description {
+		    pointer-events: auto;
+		    font-family: sans-serif;
+		    padding: 1em;
+		    background-color:rgba(255,255,255,0.7);
+		    -webkit-backdrop-filter: blur(5px);
+		    backdrop-filter: blur(5px);
+		    position:absolute;
+		    top: 0px;
+		    left:0px;
+		    right: 0px;
+		    text-align: center;
+		}
+
+		#progressBar {
+		    position: relative;
+		    margin: 0 auto;
+		    width: 100%;
+		    height: 100px;
+		    top:0px;
+		    background-color: grey;
+		    z-index: 100;
+		}
+
+		#theBar {
+		    position: absolute;
+		    z-index: 101;
+		    width: 1%;
+		    height: 100%;
+		    background-color: rgba(201,0,41, 1.0);
+		}
+
+		#progressLabel {
+			position: relative;
+		    width: 100%;
+		    height: 100px;
+		    text-align: center;
+		    line-height: 100px;
+		    font-size: 26px;
+		    color: white;
+		    z-index: 102;
+		}
+
+		#scanSpace{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+			visibility: hidden;
+		}
+
+		#scanImage{
+			width: 150px;
+			height: 150px;
+			position: absolute;
+			top:40%;
+			left: 5%;
+
+			x-transition: all 2s ease-in-out;
+  			animation: ani 2.7s infinite;
+		}
+
+		@keyframes ani {
+		  0% {
+		    left: 1%;
+		  }
+		  50% {
+		    left: 60%;
+		  }
+		  100% {
+		    left: 1%;
+		  }
+		}
+
+		#askAboutPos{
+			position: absolute;
+			bottom: -110px;
+			left: 0px;
+			height: 100px;
+			width: 100%;
+			text-align: center;
+			background: #000000;
+			color: #FFFFFF;
+			padding-top: 10px;
+			visibility: hidden;
+
+			-webkit-transition: bottom 1.5s ease-out;
+			-moz-transition: bottom 1.5s ease-out;
+			-o-transition: bottom 1.5s ease-out;
+			transition: bottom 1.5s ease-out;
+		}
+
+		#askAboutPos.active{
+			bottom:0px !important;
+			visibility: visible;
+		}
+
+		.appBtn{
+			background-color: #333333;
+			border: none;
+			border-radius: 5px;
+			padding: 15px 20px;
+			color: #FFFFFF;
+			margin: 10px;
+		}
+
+		.center-div{
+			position: absolute;
+			margin: auto;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			border-radius: 3px;
+			text-align: center;
+			z-index: 111;
+		}
+
+		#viewMenu{
+			position: absolute;
+			bottom: -75px;
+			left: 0px;
+			height: 75px;
+			width: 100%;
+
+			-webkit-transition: bottom 1.5s ease-out;
+			-moz-transition: bottom 1.5s ease-out;
+			-o-transition: bottom 1.5s ease-out;
+			transition: bottom 1.5s ease-out;
+			background-color: #000000;
+		}
+
+		#viewMenu.active{
+			display: inline;
+			bottom:0px !important;
+		}
+
+		#viewMenu .list {
+		    margin:0;
+		    padding: 0;
+		    list-style-type: none;
+		    display: table;
+		    table-layout: fixed;
+		    width:100%;
+		}
+
+		#viewMenu .list>li {
+		    display: table-cell;
+		    /*padding:5px;*/
+		    font-size: 18px;
+		    text-align: center;
+		    vertical-align: middle;
+		    line-height: 75px;
+		    color:#CCCCCC;
+		    cursor: pointer;
+		}
+
+		#viewMenu .list>li:hover{
+			color:rgb(204, 0, 0) !important;
+		}
+
+		#viewMenu .list>li.active{
+			color:#000000 !important;
+			font-weight: bold;
+		}
+
+		#viewMenu .list>li img{
+			height: 30px;
+		}
+
+	</style>
+		
+	<script src="build/three.js"></script>
+	<script src="js/loaders/GLTFLoader.js"></script>
+    <script src="js/loaders/DRACOLoader.js"></script>
+    <script src="js/loaders/KTXLoader.js"></script>
+    <script src="js/loaders/HDRCubeTextureLoader.js"></script>
+    <script src="js/loaders/RGBELoader.js"></script>
+    <script src="js/pmrem/PMREMGenerator.js"></script>
+    <script src="js/pmrem/PMREMCubeUVPacker.js"></script>
+	<script type="module" src="ar/polyfill/XRPolyfill.js"></script>
+	<script src="ar/arBridge.js"></script>
+
+	<script src="ar/exciteAR.js"></script>
+
+</head>
+
+<body onload="initPage()">
+	<div id="target" />
+	<div id="description">
+		CLICK TO ADD THE VETTE
+	</div>
+
+	<div id="progressBar"  style="visibility: hidden;">
+	  <div id="theBar">
+	  </div>
+	  <div id="progressLabel">10%</div>
+	</div>
+
+	<div id="scanSpace">
+		<img src="images/scanImage.png" id="scanImage">
+	</div>
+	<div id="askAboutPos">
+		VEHICLE PLACEMENT<br />
+		<input class="appBtn" type="button" id="acceptPosBtn" value="ACCEPT">
+		<input class="appBtn" type="button" id="tryAgainBtn" value="TRY AGAIN">
+	</div>
+
+	<div id="viewMenu" class="noselect">
+		<ul class="list">
+			<li id="prevNav"><img src="images/prevArrow.png"></li>
+	        <li id="colorNav">COLORS</li>
+	        <li id="rimNav">RIMS</li>
+	        <li id="nextNav"><img src="images/nextArrow.png"></li>
+	    </ul>
+	</div>
+
+	<script>
+		var arEnabled = false;
+		var scene;
+		var renderer;
+		var excite;
+		var arScene;
+		var theVette;
+		var shadowPlane;
+		var vetteScale = 0.01;
+		var vetteXOffset = -2.5;
+		var vetteYOffset = -0.2;
+		var vetteZOffset = 0;
+
+		var planeDetector;
+		var foundARPlanes = false;
+		var readyToPlace = false;
+		var updateReticle = true;
+		var vehicleAdded = false;
+
+		var colorIndex = 1;
+		var navType = "colors";
+		var viewMenu = document.getElementById("viewMenu");
+		var nextNav = document.getElementById("nextNav");
+		var prevNav = document.getElementById("prevNav");
+		var colorNav = document.getElementById("colorNav");
+		var rimNav = document.getElementById("rimNav");
+		var askPanel = document.getElementById("askAboutPos");
+		var scanPanel = document.getElementById("scanSpace");
+		var swappingRim = false;
+
+		var acceptPosBtn = document.getElementById("acceptPosBtn");
+		var tryAgainBtn = document.getElementById("tryAgainBtn");
+		var dMessage = document.getElementById("description");
+
+		function initPage(){
+			createShadowPlane();
+		}
+
+		function arIsAvailable(){
+			console.log("AR IS AVAILABLE...");
+			dMessage.innerHTML = "AR IS AVAILABLE...";
+			excite = new CorvetteARExperience();
+		}
+
+		function handleNoAR(){
+			console.log("NO AR ON THIS DEVICE...");
+		}
+
+		function handleLoadProgress(loadPercent) {
+			document.getElementById("progressBar").style.visibility = "visible";
+			document.getElementById("theBar").style.width = loadPercent + "%";
+			document.getElementById("progressLabel").innerHTML = loadPercent + "%";
+			console.log("Loading: " + loadPercent);
+		}
+
+		function vehicleLoaded(){
+			console.log("Loading has finished.");
+	        document.getElementById("progressBar").style.visibility = "hidden";
+			excite.setVetteVar();
+            dMessage.innerHTML = "SCAN YOUR SURROUNDING AREA";
+
+            scanSpace.style.visibility = "visible";
+		}
+
+		function foundFirstARPlane(){
+			if(!foundARPlanes && !vehicleAdded){
+				foundARPlanes = true;
+				dMessage.innerHTML = "TOUCH THE SCREEN TO PLACE THE VEHICLE";
+
+				setTimeout(function(){
+					scanSpace.style.visibility = "hidden";
+				}, 2500);
+				
+			}
+		}
+
+		function vehiclePlaced(){
+			theVette.visible = true;
+			shadowPlane.visible = true;
+			planeDetector.visible = false;
+			updateReticle = false;
+			vehicleAdded = true;
+			excite.setWheels('q8u');
+			//document.getElementById("askAboutPos").style.visibility = "visible";
+			dMessage.style.visibility = "hidden";
+			askPanel.classList.add("active");
+		}
+
+		function acceptPos(){
+			//document.getElementById("askAboutPos").style.visibility = "hidden";
+			askPanel.classList.remove("active");
+			console.log("NOW SHOW THE VEHICLE OPTIONS");
+			viewMenu.classList.add("active");
+		}
+
+		function repositionVette(){
+			askPanel.classList.remove("active");
+			theVette.visible = false;
+			shadowPlane.visible = false;
+			readyToPlace = true;
+			updateReticle = true;
+			planeDetector.visible = true;
+			window.pageApp.newSession();
+		}
+
+		function createShadowPlane(){
+			shadowPlane = new THREE.Mesh(
+	            new THREE.PlaneGeometry(4.5, 2.5, 4),
+	            new THREE.MeshPhongMaterial({
+	                color: '#000000',
+	                transparent: true,
+	                opacity: 0.7,
+	                alphaMap: new THREE.TextureLoader().load('textures/model/exterior/groundshadow.png')
+	            })
+	        )
+	        shadowPlane.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)))
+			console.log("Shadow plane created...");
+		}
+
+		/*
+		This is the THREE.js example from https://threejs.org/examples/webgl_points_dynamic.html ported to WebXR
+		*/
+		class PageApp extends ThingsOnSurfacesApp {
+			constructor(domElement) {
+				super(domElement, false)
+				
+				this._tapEventData = null;
+				this._reticleHitData = [ 0.5, 0.5 ]
+				this._hitAnchorOffset = null;
+			}
+
+			// doRender() {
+			// 	this.renderer.clear()
+			// 	this.composer.render(0.01)
+			// }
+
+			// Called during construction to allow the app to populate this.scene
+			initializeScene() {
+				console.log("INITIALIZING SCENE");
+
+				scene = this.scene;
+				renderer = this.renderer;
+
+				// Add a box at the scene origin
+				let box = new THREE.Mesh(
+					new THREE.BoxBufferGeometry(0.1, 0.1, 0.1),
+					new THREE.MeshPhongMaterial({
+						color: '#DDFFDD'
+					})
+				)
+				box.position.set(0, 0.05, 0)
+				var axesHelper = AxesHelper(0.2);
+				this.floorGroup.add(axesHelper);
+				this.floorGroup.add(box)
+
+				//CREATE THE PLANE DETECTOR
+				var outline = 
+				this.reticleParent = new THREE.Object3D()
+				this.reticle = new THREE.Mesh(
+					new THREE.PlaneGeometry(4.493, 1.877, 4),
+					new THREE.MeshPhongMaterial({
+						color: '#DDFFDD',
+						transparent: true,
+						opacity: 0.5,
+						map: new THREE.TextureLoader().load('images/reticleOutline.png')
+					})
+				)
+				
+				// this.reticle = new THREE.Mesh(
+				//  new THREE.BoxBufferGeometry(4.493, 1.877, 0.1),
+				// 	new THREE.MeshPhongMaterial({
+				// 		color: '#DDFFDD',
+				// 		transparent: true,
+				// 		opacity: 0.5
+				// 	})
+				//)
+				this.reticle.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)))
+				this.reticle.visible = false
+                this.reticleParent.add(this.reticle)
+				this.scene.add(this.reticleParent)
+				planeDetector = this.reticle;
+
+				// Add a few lights
+				this.scene.add(new THREE.AmbientLight('#FFF', 0.2))
+				let directionalLight = new THREE.DirectionalLight('#FFF', 0.6)
+				directionalLight.position.set(0, 10, 0)
+				this.scene.add(directionalLight)
+
+				// // Add the 1964 Vette
+				// loadGLTF('testvette/Stingray.gltf').then(gltf => {
+				// 	gltf.scene.scale.set(0.25, 0.25, 0.25);
+
+				// 	gltf.scene.traverse(node => {
+				// 		if (node.material && (node.material.isMeshStandardMaterial || (node.material.isShaderMaterial && node.material.envMap !== undefined))){
+				// 			node.material.envMap = this.envMap
+				// 			node.material.needsUpdate = true
+				// 		}
+
+
+				// 	})
+
+				// 	this.theVette = gltf.scene;
+
+				// 	dMessage.innerHTML = "THE VETTE HAS LOADED...CLICK TO PLACE";
+
+				// }).catch((...params) =>{
+				// 	console.error('could not load gltf', ...params)
+				// })
+
+			}
+
+			updateScene(frame) {
+				//console.log("Updating plane detector...");
+				if (this._hitAnchorOffset) {
+					this.updateNodeFromAnchorOffset(frame, this.reticle, this._hitAnchorOffset)
+				}
+
+				if (this._tapEventData !== null) {
+					const x = this._tapEventData[0]
+					const y = this._tapEventData[1]
+					this._tapEventData = null
+					// Attempt a hit test using the normalized screen coordinates
+					frame.findAnchor(x, y).then(anchorOffset => {
+						if (anchorOffset === null) {
+							console.log('miss')
+							return
+						}
+						console.log('hit', anchorOffset)
+						this.positionFeatureObject(anchorOffset)
+					}).catch(err => {
+						console.error('Error in hit test', err)
+					})
+				}
+
+				//ONCE THE FIRST PLANE IS FOUND, ALLOW THE USER TO PLACE THE VEHCILE
+				//THIS SHOULD ONLY FIRE ONCE - DON'T RESET THE VehicleAdded var.
+				if(foundARPlanes && !vehicleAdded){
+					readyToPlace = true;
+				}
+			}
+
+			newSession() {
+				const x = this._reticleHitData[0]
+				const y = this._reticleHitData[1]
+				this.session.hitTest(x, y, XRPresentationFrame.HIT_TEST_TYPE_ALL).then(this.handleHit.bind(this)).catch(err => {
+					console.error('Error in hit test', err)
+				})
+			}
+
+			handleHit(anchorOffset) {
+
+				if(updateReticle){
+					if(anchorOffset === null){
+						//this._messageEl.innerHTML = 'miss'
+					} else {
+						//this._messageEl.innerHTML = 'hit'
+						this.reticle.visible = true;
+						this._hitAnchorOffset = anchorOffset;
+						foundFirstARPlane();
+					}
+					// keep testing!
+					const x = this._reticleHitData[0]
+					const y = this._reticleHitData[1]
+					window.setTimeout(() => {
+						this.session.hitTest(x, y, XRPresentationFrame.HIT_TEST_TYPE_ALL).then(this.handleHit.bind(this)).catch(err => {
+							console.error('Error in hit test', err)
+						})
+					})
+				}
+			}
+
+			positionFeatureObject(anchorOffset){
+				try{
+					if(readyToPlace && (theVette != null)){
+						let node = new THREE.Group();
+						// let box = new THREE.Mesh(
+						// 	new THREE.BoxBufferGeometry(4.493, 1.234, 1.877),
+						// 	new THREE.MeshPhongMaterial({
+						// 		color: '#DDFFDD',
+						// 		transparent: true,
+						// 		opacity: 0.5
+						// 	})
+						// )
+						// box.position.set(0,0.67,0);
+						// box.name = "vetteplaceholder";
+						// node.add(box);
+
+						node.add(shadowPlane);
+						node.add(theVette);
+						shadowPlane.position.set(0.6,0,0);
+						theVette.scale.set(vetteScale,vetteScale,vetteScale);
+						theVette.position.set(vetteXOffset,vetteYOffset,vetteZOffset);
+
+						this.anchoredNodes.push({
+							anchorOffset: anchorOffset,
+							node: node
+						})
+						this.scene.add(node);
+						//dMessage.innerHTML = "Vette added...";
+						readyToPlace = false;
+
+						vehiclePlaced();
+					}
+				}catch(err){
+					dMessage.innerHTML = err.message;
+				}
+			}
+
+		}
+
+		function AxesHelper(size) {
+			size = size || 1;
+
+			var vertices = [
+				0, 0, 0, size, 0, 0,
+				0, 0, 0, 0, size, 0,
+				0, 0, 0, 0, 0, size
+			];
+
+			var colors = [
+				1, 0, 0, 1, 0.6, 0,
+				0, 1, 0, 0.6, 1, 0,
+				0, 0, 1, 0, 0.6, 1
+			];
+
+			var geometry = new THREE.BufferGeometry();
+			geometry.addAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+			geometry.addAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+			var material = new THREE.LineBasicMaterial({
+				vertexColors: THREE.VertexColors
+			});
+
+			return new THREE.LineSegments(geometry, material);
+		}
+
+		window.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				try {
+					window.pageApp = new PageApp(document.getElementById('target'))
+				} catch (e) {
+					console.error('page error', e)
+				}
+			}, 1000)
+		})
+
+		acceptPosBtn.addEventListener("click", function() {
+			acceptPos();
+		});
+
+		tryAgainBtn.addEventListener("click", function() {
+			repositionVette();
+		});
+
+		nextNav.addEventListener("click", function() {
+			goNextNav();
+		});
+
+		prevNav.addEventListener("click", function() {
+			goPrevNav();
+		});
+
+		colorNav.addEventListener("click", function() {
+			setColorNav();
+		});
+
+		rimNav.addEventListener("click", function() {
+			setRimNav();
+		});
+
+		function setColorNav(){
+			navType = "colors";
+		}
+
+		function setRimNav(){
+			navType = "rims";
+		}
+
+		function goNextNav(){
+			if(navType == "colors"){
+				nextColor();
+			}
+
+			if(navType == "rims"){
+				swappingRim = true;
+				excite.nextWheel();
+			}
+		}
+
+		function goPrevNav(){
+			if(navType == "colors"){
+				prevColor();
+			}
+
+			if(navType == "rims"){
+				swappingRim = true;
+				excite.prevWheel();
+			}
+		}
+
+		function nextColor(){
+			colorIndex++;
+			if(colorIndex > 4){
+				colorIndex = 1;
+			}
+			sendColorChange();
+		}
+
+		function prevColor(){
+			colorIndex--;
+			if(colorIndex < 1){
+				colorIndex = 4;
+			}
+			sendColorChange();
+		}
+
+		function sendColorChange(){
+			var colorCode = "G8G";
+			switch(colorIndex){
+				case 1:
+					colorCode = "G8G";
+					break;
+
+				case 2:
+					colorCode = "GKZ";
+					break;
+
+				case 3:
+					colorCode = "GBA";
+					break;
+
+				case 4:
+					colorCode = "GC6";
+					break;
+			}
+			excite.setColor(colorCode);
+		}
+
+	</script>
+</body>
+
+</html>

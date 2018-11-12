@@ -1,0 +1,17 @@
+{
+  "name": "S8Server",
+  "version": "1.0.0",
+  "description": "Splitting Eights App Server",
+  "main": "app.js",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  },
+  "author": "M.Medalia",
+  "license": "ISC"
+}

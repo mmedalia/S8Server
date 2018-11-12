@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Spitting Eights - AR Project Info Page</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+		<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+		<style>
+			html body {
+				font-family: 'Montserrat', sans-serif;
+				line-height: 1.25em;
+				background: #000000 url("images/bmw_ar_splash.jpg") no-repeat;
+				background-size: contain;
+				background-position: bottom right;
+				width: 100%;
+				height: 100vh;
+				margin: 0px;
+			}
+
+			#description {
+			    pointer-events: auto;
+			    margin: 0px;
+			    padding: 1em;
+			    font-size: 12px;
+			    position: relative;
+			    top: 0px;
+			    left: 0px;
+			    right: 0px;
+			    color:#FFFFFF;
+			}
+
+			#btnHolder{
+				width: 100%;
+				text-align: center;
+			}
+
+			.launchBtn{
+				display: inline-block;
+				background: #222222;
+				color: #FFFFFF;
+				font-size: 18px;
+				text-decoration: none;
+				padding: 15px 20px;
+				margin: 15px;
+				border: none;
+				border-radius: 5px;
+			}
+
+			#topLogo{
+				width: 150px;
+			}
+
+			.alert{
+				font-size: 20px;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="description">
+			<p>
+				<span class="alert">NOTE!</span>
+				<br />
+				The AR link below is to an experimental prototype using WebXR technology, and needs to be open from within a browser that supports it.<br />
+				Currently (Nov 2018) Mozilla WebXR Viewer for IOS.
+			</p>
+		</div>
+		<div id="btnHolder">
+			<a class="launchBtn" href="ardemo.html">LAUNCH AR</a>
+			<br />
+			<a class="launchBtn" href="vrdemo.html">LAUNCH VR</a>
+		</div>
+	</body>
+</html>

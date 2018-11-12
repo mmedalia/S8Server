@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Ford Field Viewer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html body {
+				background-color: #FFFFFF;
+				height: 100%;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#viewMenu{
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+				height: 55px;
+				width: 100%;
+
+				-webkit-transition: bottom 0.5s ease-out;
+				-moz-transition: bottom 0.5s ease-out;
+				-o-transition: bottom 0.5s ease-out;
+				transition: bottom 0.5s ease-out;
+				background-color: #000000;
+			}
+
+			#viewMenu.active{
+				display: inline;
+				bottom:0px !important;
+			}
+
+			#viewMenu .list {
+			    margin:0;
+			    padding: 0;
+			    list-style-type: none;
+			    display: table;
+			    table-layout: fixed;
+			    width:100%;
+			}
+			#viewMenu .list>li {
+			    display: table-cell;
+			    padding:5px;
+			    font-size: 15px;
+			    text-align: center;
+			    color:#CCCCCC;
+			    cursor: pointer;
+			}
+
+			#viewMenu .list>li:hover{
+				color:rgb(204, 0, 0) !important;
+			}
+
+			#viewMenu .list>li.active{
+				color:#000000 !important;
+				font-weight: bold;
+			}
+
+			#progressBar {
+			    position: relative;
+			    margin: 0 auto;
+			    width: 100%;
+			    height: 100px;
+			    top:0px;
+			    background-color: grey;
+			    z-index: 100;
+			}
+
+			#theBar {
+			    position: absolute;
+			    z-index: 101;
+			    width: 1%;
+			    height: 100%;
+			    background-color: rgba(201,0,41, 1.0);
+			}
+
+			#progressLabel {
+				position: relative;
+			    width: 100%;
+			    height: 100px;
+			    text-align: center; /* If you want to center it */
+			    line-height: 100px; /* Set the line-height to the same as the height of the progress bar container, to center it vertically */
+			    color: white;
+			    z-index: 102;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="progressBar"  style="visibility: hidden;">
+		  <div id="theBar">
+		  </div>
+		  <div id="progressLabel">10%</div>
+		</div>
+
+		<div id="viewMenu" class="noselect">
+			<ul class="list">
+				<li id="nextNav"><</li>
+		        <li id="colorNav">COLORS</li>
+		        <li id="rimNav">RIMS</li>
+		        <li id="prevNav">></li>
+		    </ul>
+		</div>
+
+		<script src="build/three.js"></script>
+		<script src="js/loaders/GLTFLoader.js"></script>
+        <script src="js/loaders/DRACOLoader.js"></script>
+        <script src="js/loaders/KTXLoader.js"></script>
+        <script src="js/loaders/HDRCubeTextureLoader.js"></script>
+        <script src="js/loaders/RGBELoader.js"></script>
+        <script src="js/pmrem/PMREMGenerator.js"></script>
+        <script src="js/pmrem/PMREMCubeUVPacker.js"></script>
+        <script src="js/utils/SceneUtils.js"></script>
+        <script src="scripts/controls/OrbitControls.js"></script>
+
+        <script src="ar/exciteAR.js"></script>
+
+		
+		<script>
+
+			var container, stats, introDiv;
+			var isTouchDevice;
+			var aListener;
+
+			var camera, scene, controls, renderer, clock, objects;
+			var particleLight, directionalLight;
+			var dae;
+			var sphere;
+			var excite;
+			var theVette;
+			var colorIndex = 1;
+
+			var swappingRims = false;
+			var navType = "colors";
+			var nextNav = document.getElementById("nextNav");
+			var prevNav = document.getElementById("prevNav");
+			var colorNav = document.getElementById("colorNav");
+			var rimNav = document.getElementById("rimNav");
+			
+			//console.log("Touch check : " + is_touch_device() );
+			isTouchDevice = is_touch_device();
+			init();
+
+			function handleLoadProgress(loadPercent) {
+				document.getElementById("progressBar").style.visibility = "visible";
+				document.getElementById("theBar").style.width = loadPercent + "%";
+				document.getElementById("progressLabel").innerHTML = loadPercent + "%";
+				console.log("Loading: " + loadPercent);
+			}
+
+			function vehicleLoaded(){
+				console.log("Loading has finished.");
+		        document.getElementById("progressBar").style.visibility = "hidden";
+				excite.setVetteVar();
+	            excite.setWheels('q8u');
+	            //dMessage.innerHTML = "THE VETTE HAS LOADED...CLICK TO PLACE";
+	            scene.add(theVette);
+	            //document.getElementById("scanSpace").style.visibility = "visible";
+			}
+			
+			function init() {
+				
+				//CREATE CONTAINER
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				
+				//CONFIG RENDERER
+				renderer = new THREE.WebGLRenderer({
+				  antialias: true,
+				  alpha: true
+				});
+				renderer.setClearColor(0xffffff, 0);
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				renderer.shadowMapEnabled = true;
+				renderer.shadowMapSoft = false;
+
+				renderer.shadowCameraNear = 0.3;
+				renderer.shadowCameraFar = 3000;
+				renderer.shadowCameraFov = 50;
+
+				renderer.shadowMapBias = 0.0039;
+				renderer.shadowMapDarkness = 0.5;
+				//renderer.shadowMapWidth = 1024;
+				//renderer.shadowMapHeight = 1024;
+
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera.position.set( -50, 10, 0 );
+
+				aListener = new THREE.AudioListener();
+				camera.add( aListener );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.enableKeys = false;
+				controls.minDistance = 0.25;
+				controls.maxDistance = 3000.0;
+				controls.maxPolarAngle = Math.PI * 0.7;
+				controls.target.set( 15, 10, 0 );
+
+				scene = new THREE.Scene();
+				//scene.fog = new THREE.Fog( 0x72645b, 15, 25 );
+
+				//buildTestScene();
+				buildCorvetteScene();
+
+				//LISTENERS
+				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'keypress', inputKey, false );
+
+				//START THE GAME LOOP
+				clock = new THREE.Clock();
+				animate();
+
+			}
+
+			function buildCorvetteScene(){
+				excite = new CorvetteARExperience();
+			}
+
+			function buildTestScene(){
+				var box = new THREE.Mesh(
+					new THREE.BoxBufferGeometry(1,1,1),
+					new THREE.MeshPhongMaterial({
+						color: '#DDFFDD'
+					})
+				)
+				scene.add(box);
+			}
+
+			function inputKey(e){
+				console.log("Pressed : " + e.code);
+				if(e.code == "Period"){
+					nextColor();
+				}
+
+				if(e.code == "Comma"){
+					prevColor();
+				}
+
+				if(e.code == "Digit1"){
+					excite.prevWheel();
+				}
+
+				if(e.code == "Digit2"){
+					excite.nextWheel();
+				}
+			}
+
+			function setColorNav(){
+				navType = "colors";
+			}
+
+			function setRimNav(){
+				navType = "rims";
+			}
+
+			function goNextNav(){
+				if(navType == "colors"){
+					nextColor();
+				}
+
+				if(navType == "rims"){
+					swappingRims = true;
+					excite.nextWheel();
+				}
+			}
+
+			function goPrevNav(){
+				if(navType == "colors"){
+					prevColor();
+				}
+
+				if(navType == "rims"){
+					swappingRims = true;
+					excite.prevWheel();
+				}
+			}
+
+			function nextColor(){
+				colorIndex++;
+				if(colorIndex > 4){
+					colorIndex = 1;
+				}
+				sendColorChange();
+			}
+
+			function prevColor(){
+				colorIndex--;
+				if(colorIndex < 1){
+					colorIndex = 4;
+				}
+				sendColorChange();
+			}
+
+			function sendColorChange(){
+				var colorCode = "G8G";
+				switch(colorIndex){
+					case 1:
+						colorCode = "G8G";
+						break;
+
+					case 2:
+						colorCode = "GKZ";
+						break;
+
+					case 3:
+						colorCode = "GBA";
+						break;
+
+					case 4:
+						colorCode = "GC6";
+						break;
+				}
+				excite.setColor(colorCode);
+			}
+
+			function progressBar(percentLoaded){
+				var elem = document.getElementById("theBar"); 
+			    var width = 100*percentLoaded;
+			    if (width >= 100) {
+			    	document.getElementById("progressBar").style.visibility = "hidden";
+			    }else{
+			    	elem.style.width = width + '%';
+			    	document.getElementById("progressLabel").innerHTML = parseInt(width) + '%';
+			    }
+			}
+
+			function onWindowResize() {
+				tryFullscreen();
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function is_touch_device() {
+			  return 'ontouchstart' in window        // works on most browsers 
+			      || navigator.maxTouchPoints;       // works on IE10/11 and Surface
+			}
+
+			function tryFullscreen(){
+				container.addEventListener("click", function() {
+					try{
+				    	document.body.requestFullscreen();
+				    }catch(err){
+						//No Action
+					}
+				}, false);
+			}
+
+			//
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				//stats.update();
+
+			}
+
+			function render() {
+
+				var timer = Date.now() * 0.0005;
+				var dt = clock.getDelta();
+				controls.update( dt );
+				renderer.render( scene, camera );
+			
+			}
+
+
+			function removeTransparency(assemb){
+				if ( assemb instanceof THREE.Mesh ) {
+		    		assemb.material.opacity = 1.0;
+		    	}else{
+		    		assemb.traverse( function ( child ) {
+						if ( child instanceof THREE.Mesh ) {
+							child.material.opacity = 1.0;
+						}
+					});
+		    	}
+			}
+
+			function fadeAssembly(assemb, opacityLevel, fadeTime){
+				//FIND THE MESHES IN THE ASSEMBLY THEN SEND THEM TO THE FADE OBJECT FUNCTION
+				console.log("Fading : " + assemb.name + ", " + assemb.children.length + " children in assembly.");
+				assemb.traverse( function ( child ) {
+					if ( child instanceof THREE.Mesh ) {
+						fadeOutObject(child, opacityLevel, fadeTime);
+					}
+				});
+				
+			}
+
+			function fadeOutObject(obj, opacityLevel, fadeTime){
+				//CHANGE THE OBJECTS MATERIAL TO VERIFY IT CAN BE TRANSPARENT.
+				obj.material.transparent = true;
+				
+				//GRADUALLY SET THE OBJECTS OPACITY OVER FADE-TIME
+				new TWEEN.Tween( obj.material ).to( { opacity: opacityLevel }, fadeTime ).start();
+			}
+
+			function handleAnimations(){
+
+				//ROTATE THE FAN BLADES
+				if(fanBlades != null){
+					var yAxis = new THREE.Vector3(0,0,1);
+					var rads = Math.PI / 20;
+					rotObjectMatrix = new THREE.Matrix4();
+				    rotObjectMatrix.makeRotationAxis(yAxis.normalize(), rads);
+
+				    fanBlades.matrix.multiply(rotObjectMatrix);
+				    fanBlades.rotation.setFromRotationMatrix(fanBlades.matrix);
+				}
+
+			}
+
+			nextNav.addEventListener("click", function() {
+				goNextNav();
+			});
+
+			prevNav.addEventListener("click", function() {
+				goPrevNav();
+			});
+
+			colorNav.addEventListener("click", function() {
+				setColorNav();
+			});
+
+			rimNav.addEventListener("click", function() {
+				setRimNav();
+			});
+
+		</script>
+	</body>
+</html>
